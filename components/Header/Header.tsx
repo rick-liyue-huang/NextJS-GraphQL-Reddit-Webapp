@@ -10,10 +10,17 @@ import {
   VideoCameraIcon,
 } from '@heroicons/react/outline';
 import { ChevronDownIcon, HomeIcon } from '@heroicons/react/solid';
+import { signIn, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import React from 'react';
 
 export const Header: React.FC = () => {
+  const { data: session } = useSession();
+
+  const handleLogin = () => {
+    signIn();
+  };
+
   return (
     <div className="flex bg-white px-4 py-2 items-center shadow-sm sticky top-0 z-100">
       {/* Logo */}
@@ -49,8 +56,44 @@ export const Header: React.FC = () => {
         <SpeakerphoneIcon className="icon" />
       </div>
       <div className="ml-5 flex items-center lg:hidden">
-        <MenuIcon className="icon" />
+        <MenuIcon className="icon" onClick={handleLogin} />
       </div>
+      {/* auth buttons */}
+      {session ? (
+        <div
+          className="hidden lg:flex items-center space-x-2 p-2 cursor-pointer"
+          onClick={handleLogin}
+        >
+          <div className="relative w-6 h-6 flex-shrink-0">
+            <Image
+              src="/images/redditFace.svg"
+              alt="user logo"
+              layout="fill"
+              objectFit="contain"
+            />
+          </div>
+          <div className="flex-1 text-sm">
+            <p className="truncated text-gray-600">{session?.user?.name}</p>
+            <p className="text-gray-400">1 karma</p>
+          </div>
+          <ChevronDownIcon className="h-5 flex-shrink-0 text-gray-400" />
+        </div>
+      ) : (
+        <div
+          className="hidden lg:flex items-center space-x-2 p-2 cursor-pointer"
+          onClick={handleLogin}
+        >
+          <div className="relative w-6 h-6 flex-shrink-0">
+            <Image
+              src="/images/redditFace.svg"
+              alt="user logo"
+              layout="fill"
+              objectFit="contain"
+            />
+          </div>
+          <p className="text-gray-400">Log In</p>
+        </div>
+      )}
     </div>
   );
 };

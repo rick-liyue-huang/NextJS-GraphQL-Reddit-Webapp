@@ -22,7 +22,7 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <div className="flex bg-white px-4 py-2 items-center shadow-sm sticky top-0 z-100">
+    <div className="flex bg-white px-3 items-center shadow-sm sticky top-0 z-100 pb-2">
       {/* Logo */}
       <div className="relative w-20 h-10 flex-shrink-0">
         <Image src="/images/redditlogo.png" layout="fill" objectFit="contain" />
@@ -80,7 +80,7 @@ export const Header: React.FC = () => {
         </div>
       ) : (
         <div
-          className="hidden lg:flex items-center space-x-2 p-2 cursor-pointer"
+          className="hidden lg:flex items-center space-x-2 p-1 cursor-pointer"
           onClick={handleLogin}
         >
           <div className="relative w-6 h-6 flex-shrink-0">

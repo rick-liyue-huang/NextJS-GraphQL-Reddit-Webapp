@@ -6,7 +6,10 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { client } from '../../apollo/apollo-client';
 import { ADD_POST, ADD_SUBREDDIT } from '../../graphql/mutations/mutatioins';
-import { GET_SUBREDDIT_BY_TOPIC } from '../../graphql/queries/queries';
+import {
+  GET_ALL_POSTS,
+  GET_SUBREDDIT_BY_TOPIC,
+} from '../../graphql/queries/queries';
 import { Avatar } from '../Avatar/Avatar';
 
 interface FormData {
@@ -16,7 +19,11 @@ interface FormData {
   subreddit: string;
 }
 
-export const PostBox: React.FC = () => {
+interface Props {
+  subreddit?: string;
+}
+
+export const PostBox: React.FC<Props> = ({ subreddit }) => {
   const [imageBoxOpen, setImageBoxOpen] = useState(false);
   const { data: session } = useSession();
   const {
@@ -27,8 +34,13 @@ export const PostBox: React.FC = () => {
     formState: { errors },
   } = useForm<FormData>();
 
+  // console.log('topic ---', subreddit);
+
   // connect with graphql query coding
-  const [addPost] = useMutation(ADD_POST);
+  const [addPost] = useMutation(ADD_POST, {
+    // after add post to refech another method
+    refetchQueries: [GET_ALL_POSTS, 'getPostList'],
+  });
   const [addSubReddit] = useMutation(ADD_SUBREDDIT);
 
   const onSubmit = async (formData: FormData) => {
@@ -44,7 +56,7 @@ export const PostBox: React.FC = () => {
         fetchPolicy: 'no-cache', // very important for get the existing community without refreshing page
         query: GET_SUBREDDIT_BY_TOPIC,
         variables: {
-          topic: formData.subreddit,
+          topic: subreddit || formData.subreddit,
         },
       });
 
@@ -59,7 +71,7 @@ export const PostBox: React.FC = () => {
           data: { insertSubReddit: newCommunity },
         } = await addSubReddit({
           variables: {
-            topic: formData.subreddit,
+            topic: subreddit || formData.subreddit,
           },
         });
 
@@ -133,7 +145,9 @@ export const PostBox: React.FC = () => {
           {...register('postTitle', { required: true })}
           placeholder={
             session
-              ? 'create your post by entering title here...'
+              ? subreddit
+                ? `create post in r/${subreddit}`
+                : 'create your post by entering title here...'
               : 'login first please...'
           }
           className="bg-gray-50 p-2 pl-5 outline-none flex-1 text-gray-600"
@@ -159,15 +173,19 @@ export const PostBox: React.FC = () => {
               {...register('postBody')}
             />
           </div>
-          <div className="flex items-center px-2">
-            <p className="min-w-[90px]">Community:</p>
-            <input
-              className="m-2 flex-1 bg-gray-50 p-2 outline-none"
-              type="text"
-              placeholder="Community name"
-              {...register('subreddit', { required: true })}
-            />
-          </div>
+
+          {/* show in home page */}
+          {!subreddit && (
+            <div className="flex items-center px-2">
+              <p className="min-w-[90px]">Community:</p>
+              <input
+                className="m-2 flex-1 bg-gray-50 p-2 outline-none"
+                type="text"
+                placeholder="Community name"
+                {...register('subreddit', { required: true })}
+              />
+            </div>
+          )}
 
           {imageBoxOpen && (
             <div className="flex items-center px-2">
@@ -180,6 +198,7 @@ export const PostBox: React.FC = () => {
               />
             </div>
           )}
+
           {/* errors */}
           {Object.keys(errors).length > 0 && (
             <div className="space-y-2 p-2 text-red-500">

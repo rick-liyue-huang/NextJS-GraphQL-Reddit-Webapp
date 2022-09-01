@@ -14,6 +14,28 @@ type Post {
   subreddit_id: ID
   title: String
   username: String
+
+  # add materializer to get cascade query
+  subreddit: [Subreddit]
+    @materializer(
+      query: "getSubredditListById"
+      # id is the argument of getSubredditListById, and subreddit_id is the field of Post
+      arguments: [{ name: "id", field: "subreddit_id" }]
+    )
+
+  votes: [Vote]
+    @materializer(
+      query: "getVotesByPostId"
+      # post_id is the argument of getVotesByPostId, and id is the field of Post
+      arguments: [{ name: "post_id", field: "id" }]
+    )
+
+  comments: [Comment]
+    @materializer(
+      query: "getCommentByPost_id"
+      # post_id is the argument of getCommentByPost_id, and id is the field of Post
+      arguments: [{ name: "post_id", field: "id" }]
+    )
 }
 
 type Subreddit {
@@ -77,7 +99,12 @@ type Query {
     @dbquery(
       type: "postgresql"
       schema: "public"
-      table: "post"
+      # table: "post"
+      query: """
+      select *, "post".id as id from "post"
+      join "subreddit" on "subreddit"."id" = "post"."subreddit_id"
+      order by "post"."created_at" desc
+      """
       configuration: "postgresql_config"
     )
 
@@ -101,11 +128,35 @@ type Query {
       configuration: "postgresql_config"
     )
 
+  # for materializer
+  getSubredditListById(id: ID!): [Subreddit]
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      # table: "subreddit"
+      query: """
+      select * from subreddit where "id" = $1
+      """
+      configuration: "postgresql_config"
+    )
+
   getVoteList: [Vote]
     @dbquery(
       type: "postgresql"
       schema: "public"
       table: "vote"
+      configuration: "postgresql_config"
+    )
+
+  getVotesByPostId(post_id: ID!): [Vote]
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      # table: "vote"
+      query: """
+      select * from "vote" where "post_id" = $1
+      order by "created_at" desc
+      """
       configuration: "postgresql_config"
     )
 }

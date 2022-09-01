@@ -18,3 +18,5 @@ here needs to note:
 8. after that, here will create some sample index.graphql file connecting with database
 9. run `stepzen start`, by now the the new endpoint created in stepzen
 10. in 'apollo-client.js', it match with the stepzen api in headers configuration.
+11. run `stepzen whoami --apikey` to get apikey from terminal
+12.

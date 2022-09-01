@@ -1,7 +1,12 @@
+import { useMutation } from '@apollo/client';
 import { LinkIcon, PhotographIcon } from '@heroicons/react/outline';
 import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-hot-toast';
+import { client } from '../../apollo/apollo-client';
+import { ADD_POST, ADD_SUBREDDIT } from '../../graphql/mutations/mutatioins';
+import { GET_SUBREDDIT_BY_TOPIC } from '../../graphql/queries/queries';
 import { Avatar } from '../Avatar/Avatar';
 
 interface FormData {
@@ -18,11 +23,100 @@ export const PostBox: React.FC = () => {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<FormData>();
 
+  // connect with graphql query coding
+  const [addPost] = useMutation(ADD_POST);
+  const [addSubReddit] = useMutation(ADD_SUBREDDIT);
+
   const onSubmit = async (formData: FormData) => {
     console.log(formData);
+
+    const notification = toast.loading('creating new post...');
+
+    try {
+      // query for the subreddit topic
+      const {
+        data: { getSubredditListByTopic },
+      } = await client.query({
+        fetchPolicy: 'no-cache', // very important for get the existing community without refreshing page
+        query: GET_SUBREDDIT_BY_TOPIC,
+        variables: {
+          topic: formData.subreddit,
+        },
+      });
+
+      const communityExist = getSubredditListByTopic.length > 0;
+
+      if (!communityExist) {
+        // create subreddit
+        console.log(`community is not exists and need new one`);
+
+        // notice to match the name with index.graphql and mutaions.ts
+        const {
+          data: { insertSubReddit: newCommunity },
+        } = await addSubReddit({
+          variables: {
+            topic: formData.subreddit,
+          },
+        });
+
+        console.log('creating post ...', formData);
+        const image = formData.postImage || '';
+
+        const {
+          data: { insertPost: newPost },
+        } = await addPost({
+          variables: {
+            body: formData.postBody,
+            image,
+            subreddit_id: newCommunity.id,
+            title: formData.postTitle,
+            username: session?.user?.name,
+          },
+        });
+
+        console.log('new post: ', newPost);
+      } else {
+        // using existing subreddit
+
+        console.log('using existing community...');
+        console.log(getSubredditListByTopic);
+
+        const image = formData.postImage || '';
+
+        const {
+          data: { insertPost: newPost },
+        } = await addPost({
+          variables: {
+            title: formData.postTitle,
+            body: formData.postBody,
+            image,
+            subreddit_id: getSubredditListByTopic[0].id,
+            username: session?.user?.name,
+          },
+        });
+
+        console.log('after existing community, get new post: ', newPost);
+      }
+
+      // after new post created
+      setValue('postTitle', '');
+      setValue('postBody', '');
+      setValue('postImage', '');
+      setValue('subreddit', '');
+
+      toast.success('New post created...', {
+        id: notification,
+      });
+      // window.location.reload();
+    } catch (err) {
+      toast.error(`something wrong... ${err}`, {
+        id: notification,
+      });
+    }
   };
 
   return (
@@ -77,7 +171,7 @@ export const PostBox: React.FC = () => {
 
           {imageBoxOpen && (
             <div className="flex items-center px-2">
-              <p className="min-w-[90px]">Community:</p>
+              <p className="min-w-[90px]">Image Url:</p>
               <input
                 className="m-2 flex-1 bg-gray-50 p-2 outline-none"
                 type="text"

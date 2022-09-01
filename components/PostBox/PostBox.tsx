@@ -133,7 +133,7 @@ export const PostBox: React.FC<Props> = ({ subreddit }) => {
 
   return (
     <form
-      className="z-50 sticky top-16 border border-gray-300 rounded-md w-full"
+      className="z-50 sticky top-20 border border-gray-300 rounded-md w-full"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="flex items-center space-x-3">

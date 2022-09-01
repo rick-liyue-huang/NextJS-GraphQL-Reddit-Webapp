@@ -12,6 +12,7 @@ import {
 import { ChevronDownIcon, HomeIcon } from '@heroicons/react/solid';
 import { signIn, useSession } from 'next-auth/react';
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 
 export const Header: React.FC = () => {
@@ -24,8 +25,13 @@ export const Header: React.FC = () => {
   return (
     <div className="flex bg-white px-3 items-center shadow-sm sticky top-0 z-100 pb-2">
       {/* Logo */}
-      <div className="relative w-20 h-10 flex-shrink-0">
-        <Image src="/images/redditlogo.png" layout="fill" objectFit="contain" />
+      <div>
+        <Link href="/">
+          <img
+            src="/images/redditlogo.png"
+            className="w-20 h-10 flex-shrink-0 box-border cursor-pointer"
+          />
+        </Link>
       </div>
       {/* Home menu */}
       <div className="mx-7 flex item-center xl:min-w-[300px]">

@@ -15,6 +15,73 @@ export const GET_SUBREDDIT_BY_TOPIC = gql`
 export const GET_ALL_POSTS = gql`
   query MyQuery {
     getPostList {
+      id
+      title
+      body
+      image
+      subreddit_id
+      username
+      created_at
+      subreddit {
+        id
+        created_at
+        topic
+      }
+      comments {
+        id
+        created_at
+        post_id
+        text
+        username
+      }
+      votes {
+        created_at
+        id
+        post_id
+        upvote
+        username
+      }
+    }
+  }
+`;
+
+export const GET_ALL_POSTS_BY_TOPIC = gql`
+  query MyQuery($topic: String!) {
+    getPostListByTopic(topic: $topic) {
+      id
+      title
+      body
+      image
+      subreddit_id
+      username
+      created_at
+      subreddit {
+        id
+        created_at
+        topic
+      }
+      comments {
+        id
+        created_at
+        post_id
+        text
+        username
+      }
+      votes {
+        created_at
+        id
+        post_id
+        upvote
+        username
+      }
+    }
+  }
+`;
+
+export const GET_POST_BY_POST_ID = gql`
+  query MyQuery($post_id: ID!) {
+    getPostByPostId(post_id: $post_id) {
+      id
       title
       body
       image

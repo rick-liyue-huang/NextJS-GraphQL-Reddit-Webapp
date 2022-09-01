@@ -1,3 +1,4 @@
+import { Orbit } from '@uiball/loaders';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { Avatar } from '../../../components/Avatar/Avatar';
@@ -11,6 +12,14 @@ const CommunityPage: NextPage = () => {
   } = router;
 
   // console.log('topic: ', topic);
+
+  if (!topic) {
+    return (
+      <div className="flex w-full items-center justify-center p-10 text-xl">
+        <Orbit size={60} color="green" />
+      </div>
+    );
+  }
 
   return (
     <div className={`h-24 bg-green-400 p-10`}>
@@ -31,7 +40,7 @@ const CommunityPage: NextPage = () => {
       <div className="mx-auto max-w-5xl mt-5 pb-10">
         {/* need to update the two components for rendering the conditional data */}
         <PostBox subreddit={topic as string} />
-        <Feed />
+        <Feed topic={topic as string} />
       </div>
     </div>
   );

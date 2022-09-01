@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client';
+import { Orbit } from '@uiball/loaders';
 import React from 'react';
 import {
   GET_ALL_POSTS,
@@ -24,6 +25,14 @@ export const Feed: React.FC<Props> = ({ topic }) => {
   const posts: Post[] = !topic ? data?.getPostList : data?.getPostListByTopic;
 
   console.log(posts);
+
+  if (!posts) {
+    return (
+      <div className="flex w-full items-center justify-center p-10 text-xl">
+        <Orbit size={60} color="green" />
+      </div>
+    );
+  }
 
   return (
     <div className="mt-5 space-y-3">

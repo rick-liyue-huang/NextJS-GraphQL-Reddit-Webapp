@@ -29,7 +29,7 @@ export const Header: React.FC = () => {
         <Link href="/">
           <img
             src="/images/redditlogo.png"
-            className="w-20 h-10 flex-shrink-0 box-border cursor-pointer"
+            className="w-23 h-10 flex-shrink-0 box-border cursor-pointer"
           />
         </Link>
       </div>

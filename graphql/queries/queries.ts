@@ -122,3 +122,13 @@ export const GET_ALL_VOTES_BY_POST_ID = gql`
     }
   }
 `;
+
+export const GET_SUBREDDIT_WITH_LIMIT = gql`
+  query MyQuery($limit: Int!) {
+    getSubredditWithLimit(limit: $limit) {
+      id
+      topic
+      created_at
+    }
+  }
+`;

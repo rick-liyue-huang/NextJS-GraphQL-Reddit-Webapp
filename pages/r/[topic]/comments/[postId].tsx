@@ -86,6 +86,7 @@ const PostPage: React.FC = () => {
             {...register('comment', { required: true })}
           />
           <button
+            disabled={!session}
             type="submit"
             className="rounded-full font-semibold bg-green-300 text-white p-2 disabled:bg-gray-200"
           >

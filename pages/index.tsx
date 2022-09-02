@@ -1,9 +1,21 @@
+import { useQuery } from '@apollo/client';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { Feed } from '../components/Feed/Feed';
 import { PostBox } from '../components/PostBox/PostBox';
+import { CommunityComponent } from '../components/SubReddit/Community';
+import { GET_SUBREDDIT_WITH_LIMIT } from '../graphql/queries/queries';
+import { Subreddit } from '../types';
 
 const Home: NextPage = () => {
+  const { data } = useQuery(GET_SUBREDDIT_WITH_LIMIT, {
+    variables: {
+      limit: 10,
+    },
+  });
+
+  const communites: Subreddit[] = data?.getSubredditWithLimit;
+
   return (
     <div className="max-w-5xl my-7 mx-auto">
       <Head>
@@ -16,8 +28,17 @@ const Home: NextPage = () => {
         <Feed />
 
         <div className="sticky top-36 mx-5 mt-5 hidden h-fit min-w-[300px] rounded-md border border-gray-300 lg:inline">
-          <p>Top Communities</p>
-          <div>{/* communities list */}</div>
+          <p className="text-md mb-1 p-4 pb-3 font-bold">Top Communities</p>
+          <div>
+            {/* communities list */}
+            {communites?.map((com, index) => (
+              <CommunityComponent
+                topic={com.topic}
+                key={com.id}
+                index={index}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>

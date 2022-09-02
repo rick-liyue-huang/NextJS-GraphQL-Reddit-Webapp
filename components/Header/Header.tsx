@@ -10,17 +10,44 @@ import {
   VideoCameraIcon,
 } from '@heroicons/react/outline';
 import { ChevronDownIcon, HomeIcon } from '@heroicons/react/solid';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import { useRouter } from 'next/router';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+
+interface FormData {
+  topic: string;
+}
 
 export const Header: React.FC = () => {
   const { data: session } = useSession();
+  const [topic, setTopic] = useState('');
+  const router = useRouter();
+
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setTopic(e.target.value);
+  };
 
   const handleLogin = () => {
     signIn();
   };
+
+  const handleLogout = () => {
+    signOut();
+  };
+
+  useEffect(() => {
+    const callback = () => {
+      if (!topic) {
+        router.push('/');
+      } else {
+        router.push(`/r/${topic}`);
+      }
+    };
+    callback();
+  }, [topic]);
 
   return (
     <div className="flex bg-white px-3 items-center shadow-sm sticky top-0 z-100 pb-2">
@@ -44,7 +71,9 @@ export const Header: React.FC = () => {
         <SearchIcon className="w-6 h-6" />
         <input
           type="text"
-          placeholder="Search something..."
+          value={topic}
+          onChange={handleSearch}
+          placeholder="Search posts by entering community topic..."
           className="flex-1 bg-transparent outline-none text-gray-500"
         />
         <button className="hidden" type="submit" />
@@ -68,7 +97,7 @@ export const Header: React.FC = () => {
       {session ? (
         <div
           className="hidden lg:flex items-center space-x-2 p-2 cursor-pointer"
-          onClick={handleLogin}
+          onClick={handleLogout}
         >
           <div className="relative w-6 h-6 flex-shrink-0">
             <Image

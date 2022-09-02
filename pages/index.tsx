@@ -14,6 +14,11 @@ const Home: NextPage = () => {
       <PostBox />
       <div className="flex">
         <Feed />
+
+        <div className="sticky top-36 mx-5 mt-5 hidden h-fit min-w-[300px] rounded-md border border-gray-300 lg:inline">
+          <p>Top Communities</p>
+          <div>{/* communities list */}</div>
+        </div>
       </div>
     </div>
   );

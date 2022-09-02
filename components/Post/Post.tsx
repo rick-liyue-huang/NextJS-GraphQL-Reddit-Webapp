@@ -1,3 +1,4 @@
+import { useMutation, useQuery } from '@apollo/client';
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -8,10 +9,14 @@ import {
   ShareIcon,
 } from '@heroicons/react/outline';
 import { Orbit } from '@uiball/loaders';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
 import TimeAgo from 'react-timeago';
-import { Post } from '../../types';
+import { ADD_VOTE } from '../../graphql/mutations/mutatioins';
+import { GET_ALL_VOTES_BY_POST_ID } from '../../graphql/queries/queries';
+import { Post, Vote } from '../../types';
 import { Avatar } from '../Avatar/Avatar';
 
 interface Props {
@@ -19,6 +24,66 @@ interface Props {
 }
 
 export const PostComponent: React.FC<Props> = ({ post }) => {
+  const { data: session } = useSession();
+  const [vote, setVote] = useState<boolean>();
+  const { data, loading, error } = useQuery(GET_ALL_VOTES_BY_POST_ID, {
+    variables: {
+      post_id: post?.id,
+    },
+  });
+
+  const [addVote] = useMutation(ADD_VOTE, {
+    refetchQueries: [GET_ALL_VOTES_BY_POST_ID, 'getVotesByPostId'],
+  });
+
+  const handleUpVote = async (isUpVote: boolean) => {
+    if (!session) {
+      toast('Please login firstly');
+      return;
+    }
+
+    if (vote && isUpVote) return;
+    if (vote === false && !isUpVote) return;
+
+    console.log('vote: ', isUpVote);
+
+    await addVote({
+      variables: {
+        post_id: post.id,
+        username: session.user?.name,
+        upvote: isUpVote,
+      },
+    });
+  };
+
+  useEffect(() => {
+    const votes: Vote[] = data?.getVotesByPostId;
+    const vote = votes?.find(
+      (vote) => vote.username === session?.user?.name
+    )?.upvote;
+
+    setVote(vote);
+  }, [data]);
+
+  // console.log('error: ', error);
+  const handleDisplayVotes = (data: any) => {
+    const votes: Vote[] = data?.getVotesByPostId;
+    const displayedNumber = votes?.reduce(
+      (total, vote) => (vote?.upvote ? (total += 1) : (total -= 1)),
+      0
+    );
+
+    if (votes?.length === 0) {
+      return 0;
+    }
+
+    if (displayedNumber === 0) {
+      return votes[0]?.upvote ? 1 : -1;
+    }
+
+    return displayedNumber;
+  };
+
   if (!post) {
     return (
       <div className="flex w-full items-center justify-center p-10 text-xl">
@@ -32,9 +97,21 @@ export const PostComponent: React.FC<Props> = ({ post }) => {
       <div className="flex cursor-pointer rounded-md border border-gray-300 bg-white shandow-sm hover:border hover:border-green-400">
         {/* vote */}
         <div className="flex flex-col items-center justify-start space-y-1 rounded-l-md bg-gray-50 p-4 text-gray-400">
-          <ArrowUpIcon className="voteButtons hover:text-green-400" />
-          <p className="text-xs font-bold text-gray-700">0</p>
-          <ArrowDownIcon className="voteButtons hover:text-green-400" />
+          <ArrowUpIcon
+            className={`voteButtons hover:text-green-400 ${
+              vote && 'text-green-400'
+            }`}
+            onClick={() => handleUpVote(true)}
+          />
+          <p className="text-xs font-bold text-gray-700">
+            {handleDisplayVotes(data)}
+          </p>
+          <ArrowDownIcon
+            className={`voteButtons hover:text-green-400 ${
+              vote === false && 'text-green-400'
+            }`}
+            onClick={() => handleUpVote(false)}
+          />
         </div>
 
         <div className="p-3 pb-1">

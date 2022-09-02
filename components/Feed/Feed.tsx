@@ -24,7 +24,7 @@ export const Feed: React.FC<Props> = ({ topic }) => {
   // compare with 'query for the subreddit topic' in PostBox
   const posts: Post[] = !topic ? data?.getPostList : data?.getPostListByTopic;
 
-  console.log(posts);
+  console.log('posts: ===', posts);
 
   if (!posts) {
     return (

@@ -7,7 +7,7 @@ import { toast } from 'react-hot-toast';
 import ReactTimeago from 'react-timeago';
 import { Avatar } from '../../../../components/Avatar/Avatar';
 import { PostComponent } from '../../../../components/Post/Post';
-import { ADD_MUTATION } from '../../../../graphql/mutations/mutatioins';
+import { ADD_COMMENT } from '../../../../graphql/mutations/mutatioins';
 import { GET_POST_BY_POST_ID } from '../../../../graphql/queries/queries';
 import { Post } from '../../../../types';
 
@@ -33,7 +33,7 @@ const PostPage: React.FC = () => {
     setValue,
     formState: { errors },
   } = useForm<FormData>();
-  const [addComment] = useMutation(ADD_MUTATION, {
+  const [addComment] = useMutation(ADD_COMMENT, {
     refetchQueries: [GET_POST_BY_POST_ID, 'getPostByPostId'], // in order to get the newest post comments
   });
 

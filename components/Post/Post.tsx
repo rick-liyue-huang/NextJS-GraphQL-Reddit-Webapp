@@ -94,16 +94,16 @@ export const PostComponent: React.FC<Props> = ({ post }) => {
 
   return (
     <Link href={`/r/${post.subreddit[0]?.topic}/comments/${post.id!}`}>
-      <div className="flex cursor-pointer rounded-md border border-gray-300 bg-white shandow-sm hover:border hover:border-green-400">
+      <div className="flex cursor-pointer rounded-md border border-gray-300 bg-white dark:bg-gray-700 shandow-sm hover:border hover:border-green-400">
         {/* vote */}
-        <div className="flex flex-col items-center justify-start space-y-1 rounded-l-md bg-gray-50 p-4 text-gray-400">
+        <div className="flex flex-col items-center justify-start space-y-1 rounded-l-md bg-gray-50 dark:bg-gray-700 p-4 text-gray-400">
           <ArrowUpIcon
             className={`voteButtons hover:text-green-400 ${
               vote && 'text-green-400'
             }`}
             onClick={() => handleUpVote(true)}
           />
-          <p className="text-xs font-bold text-gray-700">
+          <p className="text-xs font-bold text-gray-700 dark:text-white">
             {handleDisplayVotes(data)}
           </p>
           <ArrowDownIcon

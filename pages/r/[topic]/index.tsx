@@ -23,7 +23,7 @@ const CommunityPage: NextPage = () => {
 
   return (
     <div className={`h-24 bg-green-400 p-10`}>
-      <div className="-mx-10 mt-10 bg-white">
+      <div className="-mx-10 mt-10 bg-white dark:bg-gray-700">
         <div className="mx-auto flex max-w-5xl items-center space-x-4 pb-3">
           <div className="-mt-5">
             <Avatar seed={topic as string} large />

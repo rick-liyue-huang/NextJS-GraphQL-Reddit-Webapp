@@ -7,10 +7,12 @@ import {
   SearchIcon,
   SparklesIcon,
   SpeakerphoneIcon,
+  SwitchHorizontalIcon,
   VideoCameraIcon,
 } from '@heroicons/react/outline';
-import { ChevronDownIcon, HomeIcon } from '@heroicons/react/solid';
+import { ChevronDownIcon } from '@heroicons/react/solid';
 import { signIn, signOut, useSession } from 'next-auth/react';
+import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -24,6 +26,8 @@ export const Header: React.FC = () => {
   const { data: session } = useSession();
   const [topic, setTopic] = useState('');
   const router = useRouter();
+
+  const { theme, setTheme } = useTheme();
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -50,7 +54,7 @@ export const Header: React.FC = () => {
   }, [topic]);
 
   return (
-    <div className="flex bg-white px-3 items-center shadow-sm sticky top-0 z-100 pb-2">
+    <div className="flex bg-white dark:bg-green-900 px-3 items-center shadow-sm sticky top-0 z-100 pb-2">
       {/* Logo */}
       <div>
         <Link href="/">
@@ -61,13 +65,18 @@ export const Header: React.FC = () => {
         </Link>
       </div>
       {/* Home menu */}
-      <div className="mx-7 flex item-center xl:min-w-[300px]">
-        <HomeIcon className="h-5 w-5" />
-        <p className="flex-1 ml-2 hidden lg:inline">Home</p>
-        <ChevronDownIcon className="h-5 w-5" />
+      <div
+        className="mx-7 flex item-center xl:min-w-[300px] cursor-pointer"
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      >
+        <SwitchHorizontalIcon className="h-5 w-5" />
+        <p className="flex-1 ml-2 hidden lg:inline font-semibold text-gray-600 dark:text-white">
+          Toggle Theme Mode
+        </p>
       </div>
+
       {/* Search Input */}
-      <form className="flex flex-1 items-center space-x-2 border border-gray-200 rounded-md bg-gray-50 px-3 py-1">
+      <form className="flex flex-1 items-center space-x-2 border border-gray-200 rounded-md bg-gray-50 px-3 py-1 dark:bg-gray-300">
         <SearchIcon className="w-6 h-6" />
         <input
           type="text"
@@ -91,7 +100,10 @@ export const Header: React.FC = () => {
         <SpeakerphoneIcon className="icon" />
       </div>
       <div className="ml-5 flex items-center lg:hidden">
-        <MenuIcon className="icon" onClick={handleLogin} />
+        <MenuIcon
+          className="icon"
+          onClick={session ? handleLogout : handleLogin}
+        />
       </div>
       {/* auth buttons */}
       {session ? (

@@ -69,7 +69,7 @@ const PostPage: React.FC = () => {
       <PostComponent post={post} />
 
       {/* Comment */}
-      <div className="rounded-b-md border border-t-0 border-gray-300 bg-white p-5 pl-16 -mt-1">
+      <div className="rounded-b-md border border-t-0 border-gray-300 bg-white dark:bg-gray-700 p-5 pl-16 -mt-1">
         <p>
           Comment as{' '}
           <span className="text-green-400">{session?.user?.name}</span>
@@ -81,21 +81,21 @@ const PostPage: React.FC = () => {
         >
           <textarea
             disabled={!session}
-            className="h-24 rounded-sm border border-gray-300 p-2 pl-4 outline-none disabled:bg-gray-50"
+            className="h-24 rounded-sm border border-gray-300 p-2 pl-4 outline-none disabled:bg-gray-50 dark:bg-gray-600"
             placeholder={session ? 'give me some idea' : 'log in please'}
             {...register('comment', { required: true })}
           />
           <button
             disabled={!session}
             type="submit"
-            className="rounded-full font-semibold bg-green-300 text-white p-2 disabled:bg-gray-200"
+            className="rounded-full font-semibold bg-green-300 dark:bg-green-900 text-white p-2 disabled:bg-gray-200"
           >
             Comment
           </button>
         </form>
       </div>
 
-      <div className="rounded-b-md bg-white py-5 px-10">
+      <div className="rounded-b-md bg-white dark:bg-gray-700 py-5 px-10">
         <hr className="py-2" />
         {post?.comments.map((comment) => (
           <div

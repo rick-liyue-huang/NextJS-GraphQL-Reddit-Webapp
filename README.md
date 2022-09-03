@@ -7,7 +7,7 @@ This application will clone Reddit again, in which using NextJS to create front-
 #### The Project Details
 
 1. SignIn and SinOut with firebase authentication with 'next-auth', and default to login by Reddit account.
-2. After sign in, the user can create community, the post under community and the comment under post, by which I create three collections, communities, posts and comments in firebase.
+2. After sign in, the user can create community, the post under community and the comment under post, by which I create four tables, including community, post, vote and comment in supabase PostgreSQL database.
 3. The user also can vote on the single post and show the posts list by vote number.
 4. Whatever the user sign in or not, the posts can be shown by searching the community name in search input of navbar.
 5. The whole web app can be toggled light and dark mode with 'next-themes'.
